@@ -146,6 +146,29 @@ function createOrUpdateCalendarEvent(e) {
   }
 
 //----------------------------------------------------------------------
+  //　「終了日時が開始日時より6時間以上後」の場合
+  var timeDiff = (endTime - startTime) / (1000 * 60 * 60); // 時間差を計算
+  if (timeDiff > 6) {
+    // イベントIDが存在する場合、カレンダーのイベントを削除
+    if (eventId) {
+      var event = calendar.getEventById(eventId);  
+      if (event) {
+        event.deleteEvent();  // イベントを削除
+        sheet.getRange(editedRow, columns["イベントID"]).clearContent();// スプレッドシートのイベントIDを削除
+      }
+    }
+    // 修正依頼のメールを送信
+    var subject = "【イベント時間の修正依頼】" + eventName +'はカレンダーに登録されていません';
+    var body = "6時間を超えるイベントは、カレンダーに表示されません。\n\n" +
+                baseset + "\n\n" +
+               "正しい終了日時に修正されるとカレンダーに登録されます。\n\n" +
+               "以下のリンクをクリックして、回答を確認または修正できます:\n" + editResponseUrl;
+
+    MailApp.sendEmail(email, subject, body);
+    return; // 終了日時が開始日時より6時間以上後であれば、これ以降の処理をスキップ
+  }
+
+//----------------------------------------------------------------------
 
 // ★新規登録か既存イベントの変更かを判別してそれぞれ処理を行う///////////////
   var isNewEvent = false; // 更新または新規作成の判定用変数
