@@ -4,7 +4,7 @@ function onFormSubmit(e) {
   var editResponseUrl = e.response.getEditResponseUrl(); // 編集リンクを取得
   Logger.log("編集リンク: " + editResponseUrl); // 編集リンクをログに出力
 
-  var sheet = SpreadsheetApp.openById('1khYEj0t3eI2LnYxgnN3uJUKHHQg8CJTk3JD3vITQlQc').getActiveSheet(); // スプレッドシートを取得
+  var sheet = SpreadsheetApp.openById('1rPnRV15D_m69ai8bHZOVAFIu8W0kuSwoE-1saJEIfgM').getActiveSheet(); // スプレッドシートを取得
   var lastRow = sheet.getLastRow(); // 対象の行を取得
 
   // スプレッドシートの指定した列に編集リンクを記入
