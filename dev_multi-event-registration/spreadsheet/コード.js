@@ -239,6 +239,23 @@ Logger.log("=========================");
       event.setTime(startTime, endTime);
       event.setDescription(message);
       Logger.log('イベントが更新されました: ' + eventId);
+            // ...existing code...
+      
+      // 行データを複数登録シートにコピーする関数
+      function copyRowToLog(sheet, editedRow) {
+        var ss = SpreadsheetApp.getActiveSpreadsheet();
+        var logSheet = ss.getSheetByName("複数登録");
+        if (!logSheet) {
+          logSheet = ss.insertSheet("複数登録");
+        }
+        var rowData = sheet.getRange(editedRow, 1, 1, sheet.getLastColumn()).getValues()[0];
+        logSheet.appendRow(rowData);
+      }
+      
+      // 例：メール送信の代わりに呼び出す
+      copyRowToLog(sheet, editedRow);
+      
+      // ...existing code...
     } else {
       Logger.log('指定されたイベントが見つかりませんでした。新しいイベントを作成します。');
     }
