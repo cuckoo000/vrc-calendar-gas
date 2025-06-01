@@ -22,16 +22,34 @@ function createOrUpdateCalendarEvent(e) {
     Logger.log(email); // メールアドレスの取得をログに出力
     Logger.log("===== メールアドレスの取得完了 =====");
   var deleteCheckbox = sheet.getRange(editedRow, columns["イベントを登録しますか"]).getValue();
+    Logger.log(deleteCheckbox); // イベントを登録しますかの値をログに出力
+    Logger.log("===== イベントを登録しますかの取得完了 =====");
   var eOrganizer = sheet.getRange(editedRow, columns["イベント主催者"]).getValue();
+    Logger.log(eOrganizer); // イベント主催者の値をログに出力
+    Logger.log("===== イベント主催者の取得完了 =====");
   var eDetails = sheet.getRange(editedRow, columns["イベント内容"]).getValue();
+    Logger.log(eDetails); // イベント内容の値をログに出力
+    Logger.log("===== イベント内容の取得完了 =====");
   var eGenre = sheet.getRange(editedRow, columns["イベントジャンル"]).getValue();
+    Logger.log(eGenre); // イベントジャンルの値をログに出力
+    Logger.log("===== イベントジャンルの取得完了 =====");
   var eConditions = sheet.getRange(editedRow, columns["参加条件（モデル、人数制限など）"]).getValue();
+    Logger.log(eConditions); // 参加条件の値をログに出力
+    Logger.log("===== 参加条件の取得完了 =====");
   var eMethod = sheet.getRange(editedRow, columns["参加方法"]).getValue();
+    Logger.log(eMethod); // 参加方法の値をログに出力
+    Logger.log("===== 参加方法の取得完了 =====");
   var eRemarks = sheet.getRange(editedRow, columns["備考"]).getValue();
+    Logger.log(eRemarks); // 備考の値をログに出力
+    Logger.log("===== 備考の取得完了 =====");
   //var eAnnounce = sheet.getRange(editedRow, columns["海外ユーザー向け告知"]).getValue();（2025年1月18日　byAJNT）
   //var xpost = sheet.getRange(editedRow, columns["X告知文"]).getValue();（2025年1月18日　byAJNT）
   var eventId = sheet.getRange(editedRow, columns["イベントID"]).getValue();
+    Logger.log(eventId); // イベントIDの値をログに出力
+    Logger.log("===== イベントIDの取得完了 =====");
   var editResponseUrl = sheet.getRange(editedRow, columns["修正URL"]).getValue();
+    Logger.log(editResponseUrl); // 修正URLの値をログに出力
+    Logger.log("===== 修正URLの取得完了 =====");
   
   // 開始日時と終了日時を日付オブジェクトとして取得
   var startTime = new Date(sheet.getRange(editedRow, columns["開始日時"]).getValue());
