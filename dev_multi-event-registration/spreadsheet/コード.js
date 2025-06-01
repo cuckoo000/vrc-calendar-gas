@@ -14,6 +14,10 @@ Logger.log("開始日時の列番号: " + columns["開始日時"]);
 Logger.log("終了日時の列番号: " + columns["終了日時"]);
 
 //デバッグエリア
+Logger.log("===== デバッグエリア =====");
+Logger.log("シート名: " + sheet.getName());
+Logger.log("編集行: " + editedRow);
+Logger.log("列マッピング: " + JSON.stringify(columns));
 Logger.log("===== 取得データ一覧 =====");
 Logger.log("イベント名: " + eventName);
 Logger.log("Android対応可否: " + android_pc);
@@ -59,7 +63,7 @@ Logger.log("=========================");
   var mailStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy/MM/dd");
   var formattedStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
   var formattedEndTime = Utilities.formatDate(endTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
-  
+
   //メール関係_タイトル_判定
   // Android対応可否の判別
       cTitle=eventName;
