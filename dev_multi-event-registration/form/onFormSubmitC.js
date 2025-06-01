@@ -8,5 +8,5 @@ function onFormSubmit(e) {
   var lastRow = sheet.getLastRow(); // 対象の行を取得
 
   // スプレッドシートの指定した列に編集リンクを記入
-  sheet.getRange(lastRow, 16).setValue(editResponseUrl); // 16列目に編集リンクを追加（必要に応じて変更）
+  sheet.getRange(lastRow, 22).setValue(editResponseUrl); // 16列目に編集リンクを追加（必要に応じて変更）
 }
