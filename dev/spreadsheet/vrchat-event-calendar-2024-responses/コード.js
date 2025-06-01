@@ -92,7 +92,7 @@ function createOrUpdateCalendarEvent(e) {
                "5分以上経ってもカレンダーからイベントが消えていない場合は、再度削除申請を行ってください。\n\n" +
                "■イベント詳細■" + "\n" + message;
      
-    MailApp.sendEmail(email, subject, body);
+//    MailApp.sendEmail(email, subject, body);
     return; // イベントが削除された場合、これ以降の処理をスキップ
   }
 
@@ -119,7 +119,7 @@ function createOrUpdateCalendarEvent(e) {
                "開始日時を未来の日付に修正してください。\n\n" +
                "以下のリンクをクリックして、回答を確認または修正できます:\n" + editResponseUrl;
      
-    MailApp.sendEmail(email, subject, body);
+//    MailApp.sendEmail(email, subject, body);
     return;  // 今日より開始日時が過去であれば、これ以降の処理をスキップ
   }
 //----------------------------------------------------------------------
@@ -141,7 +141,7 @@ function createOrUpdateCalendarEvent(e) {
                "正しい終了日時に修正されるとカレンダーに登録されます。\n\n" +
                "以下のリンクをクリックして、回答を確認または修正できます:\n" + editResponseUrl;
 
-    MailApp.sendEmail(email, subject, body);
+//    MailApp.sendEmail(email, subject, body);
     return; // 終了日時より開始日時が未来であれば、これ以降の処理をスキップ
   }
 
@@ -164,10 +164,9 @@ function createOrUpdateCalendarEvent(e) {
                "正しい終了日時に修正されるとカレンダーに登録されます。\n\n" +
                "以下のリンクをクリックして、回答を確認または修正できます:\n" + editResponseUrl;
 
-    MailApp.sendEmail(email, subject, body);
+//    MailApp.sendEmail(email, subject, body);
     return; // 終了日時が開始日時より6時間以上後であれば、これ以降の処理をスキップ
   }
-
 
 //----------------------------------------------------------------------
 
@@ -213,7 +212,7 @@ function createOrUpdateCalendarEvent(e) {
             message + "\n\n" +
            "以下のリンクをクリックして、登録内容を確認または編集できます:\n" + editResponseUrl;
   }
-  MailApp.sendEmail(email, subject, body);  // メールを送信
+//  MailApp.sendEmail(email, subject, body);  // メールを送信
 }
 
 // スプレッドシートの列名で列番号を取得する関数
