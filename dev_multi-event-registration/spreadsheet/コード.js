@@ -12,8 +12,12 @@ function createOrUpdateCalendarEvent(e) {
  
 // ★スプレッドシートのデータを取得///////////////
 // ※フォームの改造などによりスプレッドシートの列名が追加・変更された場合はまずここを見る
+Logger.log("===== ここまで処理が進んでいます =====");
+Logger.log(sheet.getRange(editedRow, columns["イベント名"]).getValue()); // イベント名の取得をログに出力
   var eventName = sheet.getRange(editedRow, columns["イベント名"]).getValue();
+Logger.log("===== イベント名の取得完了 =====");
   var android_pc = sheet.getRange(editedRow, columns["Android対応可否"]).getValue();
+Logger.log("===== Android対応可否の取得完了 =====");
   var email = sheet.getRange(editedRow, columns["メールアドレス"]).getValue();
   var deleteCheckbox = sheet.getRange(editedRow, columns["イベントを登録しますか"]).getValue();
   var eOrganizer = sheet.getRange(editedRow, columns["イベント主催者"]).getValue();
