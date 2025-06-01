@@ -8,31 +8,7 @@ function createOrUpdateCalendarEvent(e) {
   // 列名と列番号のマッピングを取得_最下部に関数を記載
   var columns = getColumnMapping(sheet);
 
-// ログ出力：列マッピング確認用
-Logger.log("列マッピング: " + JSON.stringify(columns));
-Logger.log("開始日時の列番号: " + columns["開始日時"]);
-Logger.log("終了日時の列番号: " + columns["終了日時"]);
 
-//デバッグエリア
-Logger.log("===== デバッグエリア =====");
-Logger.log("シート名: " + sheet.getName());
-Logger.log("編集行: " + editedRow);
-Logger.log("列マッピング: " + JSON.stringify(columns));
-Logger.log("===== 取得データ一覧 =====");
-Logger.log("イベント名: " + eventName);
-Logger.log("Android対応可否: " + android_pc);
-Logger.log("メールアドレス: " + email);
-Logger.log("イベント主催者: " + eOrganizer);
-Logger.log("イベント内容: " + eDetails);
-Logger.log("イベントジャンル: " + eGenre);
-Logger.log("参加条件: " + eConditions);
-Logger.log("参加方法: " + eMethod);
-Logger.log("備考: " + eRemarks);
-Logger.log("イベントID: " + eventId);
-Logger.log("修正URL: " + editResponseUrl);
-Logger.log("開始日時: " + startTime);
-Logger.log("終了日時: " + endTime);
-Logger.log("=========================");
  
 // ★スプレッドシートのデータを取得///////////////
 // ※フォームの改造などによりスプレッドシートの列名が追加・変更された場合はまずここを見る
@@ -63,6 +39,32 @@ Logger.log("=========================");
   var mailStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy/MM/dd");
   var formattedStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
   var formattedEndTime = Utilities.formatDate(endTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
+
+// ログ出力：列マッピング確認用
+Logger.log("列マッピング: " + JSON.stringify(columns));
+Logger.log("開始日時の列番号: " + columns["開始日時"]);
+Logger.log("終了日時の列番号: " + columns["終了日時"]);
+
+//デバッグエリア
+Logger.log("===== デバッグエリア =====");
+Logger.log("シート名: " + sheet.getName());
+Logger.log("編集行: " + editedRow);
+Logger.log("列マッピング: " + JSON.stringify(columns));
+Logger.log("===== 取得データ一覧 =====");
+Logger.log("イベント名: " + eventName);
+Logger.log("Android対応可否: " + android_pc);
+Logger.log("メールアドレス: " + email);
+Logger.log("イベント主催者: " + eOrganizer);
+Logger.log("イベント内容: " + eDetails);
+Logger.log("イベントジャンル: " + eGenre);
+Logger.log("参加条件: " + eConditions);
+Logger.log("参加方法: " + eMethod);
+Logger.log("備考: " + eRemarks);
+Logger.log("イベントID: " + eventId);
+Logger.log("修正URL: " + editResponseUrl);
+Logger.log("開始日時: " + startTime);
+Logger.log("終了日時: " + endTime);
+Logger.log("=========================");
 
   //メール関係_タイトル_判定
   // Android対応可否の判別
