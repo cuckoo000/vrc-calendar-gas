@@ -50,6 +50,9 @@ function createOrUpdateCalendarEvent(e) {
   var editResponseUrl = sheet.getRange(editedRow, columns["修正URL"]).getValue();
     Logger.log(editResponseUrl); // 修正URLの値をログに出力
     Logger.log("===== 修正URLの取得完了 =====");
+  var EventCount = sheet.getRange(editedRow, columns["回数"]).getValue();
+    Logger.log(EventCount); // 回数の値をログに出力
+    Logger.log("===== 回数の取得完了 =====");
   
   // 開始日時と終了日時を日付オブジェクトとして取得
   var startTime = new Date(sheet.getRange(editedRow, columns["開始日時"]).getValue());
@@ -146,7 +149,7 @@ Logger.log("=========================");
                "5分以上経ってもカレンダーからイベントが消えていない場合は、再度削除申請を行ってください。\n\n" +
                "■イベント詳細■" + "\n" + message;
      
-    MailApp.sendEmail(email, subject, body);
+    //MailApp.sendEmail(email, subject, body);
     return; // イベントが削除された場合、これ以降の処理をスキップ
   }
 
@@ -173,7 +176,7 @@ Logger.log("=========================");
                "開始日時を未来の日付に修正してください。\n\n" +
                "以下のリンクをクリックして、回答を確認または修正できます:\n" + editResponseUrl;
      
-    MailApp.sendEmail(email, subject, body);
+    //MailApp.sendEmail(email, subject, body);
     return;  // 今日より開始日時が過去であれば、これ以降の処理をスキップ
   }
 //----------------------------------------------------------------------
@@ -195,7 +198,7 @@ Logger.log("=========================");
                "正しい終了日時に修正されるとカレンダーに登録されます。\n\n" +
                "以下のリンクをクリックして、回答を確認または修正できます:\n" + editResponseUrl;
 
-    MailApp.sendEmail(email, subject, body);
+    //MailApp.sendEmail(email, subject, body);
     return; // 終了日時より開始日時が未来であれば、これ以降の処理をスキップ
   }
 
@@ -218,7 +221,7 @@ Logger.log("=========================");
                "正しい終了日時に修正されるとカレンダーに登録されます。\n\n" +
                "以下のリンクをクリックして、回答を確認または修正できます:\n" + editResponseUrl;
 
-    MailApp.sendEmail(email, subject, body);
+    //MailApp.sendEmail(email, subject, body);
     return; // 終了日時が開始日時より6時間以上後であれば、これ以降の処理をスキップ
   }
 
@@ -267,7 +270,7 @@ Logger.log("=========================");
             message + "\n\n" +
            "以下のリンクをクリックして、登録内容を確認または編集できます:\n" + editResponseUrl;
   }
-  MailApp.sendEmail(email, subject, body);  // メールを送信
+  //MailApp.sendEmail(email, subject, body);  // メールを送信
 }
 
 // スプレッドシートの列名で列番号を取得する関数
