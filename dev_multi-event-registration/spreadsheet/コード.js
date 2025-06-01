@@ -12,13 +12,15 @@ function createOrUpdateCalendarEvent(e) {
  
 // ★スプレッドシートのデータを取得///////////////
 // ※フォームの改造などによりスプレッドシートの列名が追加・変更された場合はまずここを見る
-Logger.log("===== ここまで処理が進んでいます =====");
-Logger.log(sheet.getRange(editedRow, columns["イベント名"]).getValue()); // イベント名の取得をログに出力
   var eventName = sheet.getRange(editedRow, columns["イベント名"]).getValue();
-Logger.log("===== イベント名の取得完了 =====");
+    Logger.log(eventName); // eventNameの値をログに出力
+    Logger.log("===== イベント名の取得完了 =====");
   var android_pc = sheet.getRange(editedRow, columns["Android対応可否"]).getValue();
-Logger.log("===== Android対応可否の取得完了 =====");
+    Logger.log(android_pc); // android_pcの値をログに出力
+    Logger.log("===== Android対応可否の取得完了 =====");
   var email = sheet.getRange(editedRow, columns["メールアドレス"]).getValue();
+    Logger.log(email); // メールアドレスの取得をログに出力
+    Logger.log("===== メールアドレスの取得完了 =====");
   var deleteCheckbox = sheet.getRange(editedRow, columns["イベントを登録しますか"]).getValue();
   var eOrganizer = sheet.getRange(editedRow, columns["イベント主催者"]).getValue();
   var eDetails = sheet.getRange(editedRow, columns["イベント内容"]).getValue();
@@ -34,15 +36,6 @@ Logger.log("===== Android対応可否の取得完了 =====");
   // 開始日時と終了日時を日付オブジェクトとして取得
   var startTime = new Date(sheet.getRange(editedRow, columns["開始日時"]).getValue());
   var endTime = new Date(sheet.getRange(editedRow, columns["終了日時"]).getValue());
-
-//★メール関係_初期設定_前項で取得した値を変数に格納///////////////
-  var body;
-  var cTitle = '';//（2025年1月25日　by 既存コードの変数を残している カッコウ ）
-  var VRCTitle = '';
-  var Quest = '';//（2025年1月25日　by 既存コードの変数を残している カッコウ）
-  var mailStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy/MM/dd");
-  var formattedStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
-  var formattedEndTime = Utilities.formatDate(endTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
 
 // ログ出力：列マッピング確認用
 Logger.log("列マッピング: " + JSON.stringify(columns));
@@ -69,6 +62,17 @@ Logger.log("修正URL: " + editResponseUrl);
 Logger.log("開始日時: " + startTime);
 Logger.log("終了日時: " + endTime);
 Logger.log("=========================");
+
+  
+//★メール関係_初期設定_前項で取得した値を変数に格納///////////////
+  var body;
+  var cTitle = '';//（2025年1月25日　by 既存コードの変数を残している カッコウ ）
+  var VRCTitle = '';
+  var Quest = '';//（2025年1月25日　by 既存コードの変数を残している カッコウ）
+  var mailStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy/MM/dd");
+  var formattedStartTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
+  var formattedEndTime = Utilities.formatDate(endTime, Session.getScriptTimeZone(), "yyyy年MM月dd日 HH時mm分");
+
 
   //メール関係_タイトル_判定
   // Android対応可否の判別
