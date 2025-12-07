@@ -1,12 +1,21 @@
 function onFormSubmit(e) {
-  Logger.log(JSON.stringify(e)); // eオブジェクトの内容をログに出力
+  Utilities.sleep(1000); // 競合回避のため待機
 
-  var editResponseUrl = e.response.getEditResponseUrl(); // 編集リンクを取得
-  Logger.log("編集リンク: " + editResponseUrl); // 編集リンクをログに出力
+  var editResponseUrl = e.response.getEditResponseUrl();
+  
+  // スプレッドシートをIDから取得
+  var sheet = SpreadsheetApp.openById('1rHTVTMSDbWq9XDY1dkAY7Sr99TNvlz35DuupZsgaRoE').getActiveSheet(); 
+  var lastRow = sheet.getLastRow(); 
+  
+  // 修正URLのターゲットセルを取得
+  var confirmedUrlCell = sheet.getRange(lastRow, 2);
 
-  var sheet = SpreadsheetApp.openById('1khYEj0t3eI2LnYxgnN3uJUKHHQg8CJTk3JD3vITQlQc').getActiveSheet(); // スプレッドシートを取得
-  var lastRow = sheet.getLastRow(); // 対象の行を取得
-
-  // スプレッドシートの指定した列に編集リンクを記入
-  sheet.getRange(lastRow, 16).setValue(editResponseUrl); // 16列目に編集リンクを追加（必要に応じて変更）
+  // 修正URL列が空欄の場合（＝初回登録時）のみ書き込む
+  if (!confirmedUrlCell.getValue()) {
+    // 修正URL列に書き込む
+    confirmedUrlCell.setValue(editResponseUrl);
+    Logger.log("編集リンクを書き込み完了");
+  } else {
+    Logger.log("B列に値、書き込みをスキップ");
+  }
 }
