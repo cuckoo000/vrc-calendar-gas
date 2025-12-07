@@ -323,17 +323,26 @@ function sendAggregatedEmails() {
   // -------------------------------------------------------------
 
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    return; // データなし
+  }
+
   var data = sheet.getDataRange().getValues();
   var columns = getColumnMapping(sheet);
+  var changeFlagRange = sheet.getRange(2, columns["変更フラグ"], lastRow - 1, 1);
+  var changeFlagValues = changeFlagRange.getValues();
   var sentRows = PropertiesService.getScriptProperties().getProperty("sentRows") || "[]";
   sentRows = JSON.parse(sentRows);
   var aggregatedEmails = {};
+  var now = new Date();
 
   for (var i = 1; i < data.length; i++) {
     var rowData = data[i];
-    
+    var changeFlag = changeFlagValues[i - 1][0];
+
     // 未送信または変更フラグが立っている行を処理
-    if (sentRows.indexOf(i) === -1 || sheet.getRange(i + 1, columns["変更フラグ"]).getValue() === true) {
+    if (sentRows.indexOf(i) === -1 || changeFlag === true) {
       var email = rowData[columns["メールアドレス"] - 1];
       var subject = "";
       var body = "";
@@ -352,21 +361,23 @@ function sendAggregatedEmails() {
 
       // 処理結果に応じた件名と本文の生成
       // 迷惑登録判定 (イベントIDが空欄 && 変更フラグがON && 削除チェックではない)
-      if (sheet.getRange(i + 1, columns["変更フラグ"]).getValue() === true && !eventId && deleteCheckbox !== "イベントを削除する") {
+      if (changeFlag === true && !eventId && deleteCheckbox !== "イベントを削除する") {
           // 処理スキップ: 迷惑登録によりカレンダー登録が拒否された行
           // 処理済みとして記録し、変更フラグをクリア
-          sentRows.push(i);
-          sheet.getRange(i + 1, columns["変更フラグ"]).clearContent();
+          if (sentRows.indexOf(i) === -1) {
+            sentRows.push(i);
+          }
+          changeFlagValues[i - 1][0] = "";
           continue;
       } else if (deleteCheckbox === "イベントを削除する") {
         subject = "【VRChatイベントカレンダー】イベント削除申請受付";
         body = formattedEventName + "\n"
               + "イベント削除申請を受け付けました。再度、登録する場合は下記のURLから登録できます。\n" 
               + editResponseUrl;
-      } else if (new Date() > startTime) {
+      } else if (now > startTime) {
         subject = "【VRChatイベントカレンダー】登録失敗通知";
         body = formattedEventName + "\n"
-              + "イベントの開始日時が過去のため、登録できませんでした。下記のURLから内容を変更して再登録申請してください。\n" 
+              + "イベントの開始日時が過去のため、登録できませんでした。下記のURLから内容を変更して再登録申請してください。\n"
               + editResponseUrl;
       } else if (endTime < startTime) {
         subject = "【VRChatイベントカレンダー】登録失敗通知";
@@ -386,8 +397,10 @@ function sendAggregatedEmails() {
         aggregatedEmails[email].body += "\n\n----------------------------------------\n\n" + body;
       }
       // 処理済みとして記録
-      sentRows.push(i);
-      sheet.getRange(i + 1, columns["変更フラグ"]).clearContent();
+      if (sentRows.indexOf(i) === -1) {
+        sentRows.push(i);
+      }
+      changeFlagValues[i - 1][0] = "";
     }
   }
 
@@ -398,5 +411,6 @@ function sendAggregatedEmails() {
   }
 
   // 処理済みの行インデックスを保存
+  changeFlagRange.setValues(changeFlagValues);
   PropertiesService.getScriptProperties().setProperty("sentRows", JSON.stringify(sentRows));
 }
