@@ -1,3 +1,41 @@
+// =============================================
+// I. ★グローバル設定パラメータ★
+// =============================================
+// フォーム回答が書き込まれるメインシートの名前
+const MAIN_EVENT_SHEET_NAME = 'フォームの回答 1';
+// 修正URL請求フォームの回答シートの名前
+const REQUEST_URL_SHEET_NAME = '修正URL請求';
+// 例の語録リストが記載されているシートの名前
+const BLACKLIST_SHEET_NAME = '語録リスト';
+// イベントを登録するGoogleカレンダーのID（テスト環境時から以降の際は必ず確認）
+// テスト環境→140749af77185343ed9181ecaa00ffa4780673d695825e106b99b061a4ee8ce4@group.calendar.google.com
+const CALENDAR_ID = '0058cd78d2936be61ca77f27b894c73bfae9f1f2aa778a762f0c872e834ee621@group.calendar.google.com';
+// ユーザーに通知するカレンダーURL
+const NOTIFICATION_CALENDAR_URL = 'https://vrceve.com/';
+
+// 1回のスクリプト実行で最大何件のメールアドレスに送信するかを制限します。
+// この値と残りクォータ数を比較し低い方を送信制限数として採用します。
+const MAX_EMAILS_PER_RUN = 20;
+
+const CHANGE_FLAG_COLUMN_NAME = '変更フラグ';
+const SENT_FLAG_COLUMN_NAME = '送信済みフラグ';
+
+const COL_EMAIL = 'メールアドレス';
+const COL_EVENT_NAME = 'イベント名';
+const COL_EDIT_URL = '修正URL';
+const COL_DELETE_CHECKBOX = 'イベントを登録しますか';
+const COL_EVENT_ID = 'イベントID';
+const COL_START_TIME = '開始日時';
+const COL_END_TIME = '終了日時';
+const COL_EVENT_ORGANIZER = 'イベント主催者';
+const COL_ANDROID_PC = 'Android対応可否';
+const COL_EVENT_DETAILS = 'イベント内容';
+const COL_EVENT_GENRE = 'イベントジャンル';
+const COL_CONDITIONS = '参加条件（モデル、人数制限など）';
+const COL_METHOD = '参加方法';
+const COL_REMARKS = '備考';
+// ---------------------------------------------
+
 /**=============================================
  * 修正URL請求フォームが送信されたときに実行される関数
  * 請求メールアドレスに紐づく未来のイベントの修正URLをまとめて送信
@@ -7,7 +45,7 @@ function sendEventEditUrls(e) {
   var requestSheet = e.range.getSheet();
   
   // シート名チェック：請求シート以外からの実行は無視
-  if (requestSheet.getName() !== '修正URL請求') {
+  if (requestSheet.getName() !== REQUEST_URL_SHEET_NAME) { 
       return;
   }
   // 1.請求条件のチェックとメールアドレスの取得
@@ -22,7 +60,7 @@ function sendEventEditUrls(e) {
     return;
   }
   // 2.メインのイベント登録シートと列情報を取得
-  var mainSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('フォームの回答 2'); 
+  var mainSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(MAIN_EVENT_SHEET_NAME); 
   if (!mainSheet) {
     // 処理中断: メインシートが見つからない
     return;
@@ -45,13 +83,13 @@ function sendEventEditUrls(e) {
   for (var i = 1; i < data.length; i++) {
     var rowData = data[i];
     // a. メールアドレスが一致するかチェック
-    var eventEmail = String(rowData[columns["メールアドレス"] - 1]).toLowerCase().trim(); 
+    var eventEmail = String(rowData[columns[COL_EMAIL] - 1]).toLowerCase().trim(); 
     if (eventEmail === requestedEmailTrimmed) {
       // b. 未来のイベントであるかチェック
-      var startTime = new Date(rowData[columns["開始日時"] - 1]);
+      var startTime = new Date(rowData[columns[COL_START_TIME] - 1]);
       if (startTime.getTime() >= todayMidnight.getTime()) { 
-        var eventName = rowData[columns["イベント名"] - 1];
-        var editUrl = rowData[columns["修正URL"] - 1];
+        var eventName = rowData[columns[COL_EVENT_NAME] - 1];
+        var editUrl = rowData[columns[COL_EDIT_URL] - 1];
         // c. メッセージに追加（修正URLが存在する場合のみ）
         if (editUrl) {
           eventsFound++;
@@ -77,26 +115,15 @@ function sendEventEditUrls(e) {
       futureEventsMessage
     );
     
-    // === 処理完了フラグのクリアとsentRowsの更新 ===
-    var sentRows = PropertiesService.getScriptProperties().getProperty("sentRows") || "[]";
-    sentRows = JSON.parse(sentRows);
     
-    var changeFlagCol = columns["変更フラグ"];
+    var changeFlagCol = columns[CHANGE_FLAG_COLUMN_NAME];
+    var sentFlagCol = columns[SENT_FLAG_COLUMN_NAME];
     
     // 処理対象となった行のフラグをクリアし、sentRowsに追加
     processedRowIndices.forEach(rowIndex => {
-        // 変更フラグをクリア
-        mainSheet.getRange(rowIndex + 1, changeFlagCol).clearContent();
-        // sentRowsに記録 (重複しないようにチェック)
-        if (sentRows.indexOf(rowIndex) === -1) {
-            sentRows.push(rowIndex);
-        }
-    });
-    
-    // 処理済みの行インデックスを保存
-    PropertiesService.getScriptProperties().setProperty("sentRows", JSON.stringify(sentRows));
-    // === 処理完了フラグのクリアとsentRowsの更新 終了 ===
-    
+        mainSheet.getRange(rowIndex + 1, changeFlagCol).clearContent();// 変更フラグをクリア
+        mainSheet.getRange(rowIndex + 1, sentFlagCol).setValue(true);//送信済みフラグをTRUEに設定
+    });    
   } else {
     // イベントが見つからなかった、またはすべて過去のイベントだった場合
     var noEventMessage = "お客様のメールアドレス (" + requestedEmail + ") に紐づく、未来に開催予定のイベントは見つかりませんでした。\n";
@@ -130,7 +157,7 @@ function getColumnMapping(sheet) {
  * 「語録リスト」シートから、メールアドレスと主催者名のブラックリストを読み込む関数
  */
 function getBlacklists() {
-   var blacklistSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('語録リスト');
+  var blacklistSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(BLACKLIST_SHEET_NAME);
   if (!blacklistSheet) {
     // 処理中断:「語録リスト」シート見つからない
     return { keywords: [], emails: [], organizers: [] };
@@ -169,7 +196,7 @@ function createOrUpdateCalendarEvent(e) {
   if (!e || !e.range || !e.values) {return;}
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   // シート名チェック：メインシート以外からの実行は無視
-  if (sheet.getName() !== 'フォームの回答 2') {
+  if (sheet.getName() !== MAIN_EVENT_SHEET_NAME) {
       return; 
   }
   var editedRow = e.range.getRow();
@@ -179,15 +206,15 @@ function createOrUpdateCalendarEvent(e) {
 
   var columns = getColumnMapping(sheet);
 
-// --- 迷惑フィルタリングの開始（メールアドレスと主催者名チェック） ---
-  var email = sheet.getRange(editedRow, columns["メールアドレス"]).getValue();
-  var eventOrganizer = sheet.getRange(editedRow, columns["イベント主催者"]).getValue(); // 主催者名を取得
-  var eventId = sheet.getRange(editedRow, columns["イベントID"]).getValue(); 
+  // --- 迷惑フィルタリングの開始（メールアドレスと主催者名チェック） ---
+  var email = sheet.getRange(editedRow, columns[COL_EMAIL]).getValue();
+  var eventOrganizer = sheet.getRange(editedRow, columns[COL_EVENT_ORGANIZER]).getValue(); // 主催者名を取得
+  var eventId = sheet.getRange(editedRow, columns[COL_EVENT_ID]).getValue(); 
 
   var blacklists = getBlacklists();
   var emailLower = String(email).toLowerCase(); 
   var organizerLower = String(eventOrganizer).toLowerCase(); // 主催者名を小文字に変換
-  var calendar = CalendarApp.getCalendarById('0058cd78d2936be61ca77f27b894c73bfae9f1f2aa778a762f0c872e834ee621@group.calendar.google.com');
+  var calendar = CalendarApp.getCalendarById(CALENDAR_ID);
 
   var isBlacklisted = false;
   // 1. メールアドレスによるチェック（A列）
@@ -205,29 +232,29 @@ function createOrUpdateCalendarEvent(e) {
           var event = calendar.getEventById(eventId);
         if (event) {
             event.deleteEvent();
-            sheet.getRange(editedRow, columns["イベントID"]).clearContent();
+            sheet.getRange(editedRow, columns[COL_EVENT_ID]).clearContent();
         }
       }
       // 変更フラグを立てて、sendAggregatedEmailsに処理結果を通知
-      sheet.getRange(editedRow, columns["変更フラグ"]).setValue(true);
+      sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
       return; // ブラックリストに載っている場合はここで処理を終了
   }
   // --- 迷惑フィルタリングの終了 以下通常処理開始 ---
 
   // 必要な回答フィールドをすべて取得
   // ※フォームの改造などによりスプレッドシートの列名が追加・変更された場合はまずここを見る（イベントIDとメールのアドレスは事前に取得済み）
-  var eventName = sheet.getRange(editedRow, columns["イベント名"]).getValue();
-  var android_pc = sheet.getRange(editedRow, columns["Android対応可否"]).getValue();
-  var deleteCheckbox = sheet.getRange(editedRow, columns["イベントを登録しますか"]).getValue();
-  var eOrganizer = sheet.getRange(editedRow, columns["イベント主催者"]).getValue();
-  var eDetails = sheet.getRange(editedRow, columns["イベント内容"]).getValue();
-  var eGenre = sheet.getRange(editedRow, columns["イベントジャンル"]).getValue();
-  var eConditions = sheet.getRange(editedRow, columns["参加条件（モデル、人数制限など）"]).getValue();
-  var eMethod = sheet.getRange(editedRow, columns["参加方法"]).getValue();
-  var eRemarks = sheet.getRange(editedRow, columns["備考"]).getValue();
-  var editResponseUrl = sheet.getRange(editedRow, columns["修正URL"]).getValue();
-  var startTime = new Date(sheet.getRange(editedRow, columns["開始日時"]).getValue());
-  var endTime = new Date(sheet.getRange(editedRow, columns["終了日時"]).getValue());
+  var eventName = sheet.getRange(editedRow, columns[COL_EVENT_NAME]).getValue();
+  var android_pc = sheet.getRange(editedRow, columns[COL_ANDROID_PC]).getValue();
+  var deleteCheckbox = sheet.getRange(editedRow, columns[COL_DELETE_CHECKBOX]).getValue();
+  var eOrganizer = sheet.getRange(editedRow, columns[COL_EVENT_ORGANIZER]).getValue();
+  var eDetails = sheet.getRange(editedRow, columns[COL_EVENT_DETAILS]).getValue();
+  var eGenre = sheet.getRange(editedRow, columns[COL_EVENT_GENRE]).getValue();
+  var eConditions = sheet.getRange(editedRow, columns[COL_CONDITIONS]).getValue();
+  var eMethod = sheet.getRange(editedRow, columns[COL_METHOD]).getValue();
+  var eRemarks = sheet.getRange(editedRow, columns[COL_REMARKS]).getValue();
+  var editResponseUrl = sheet.getRange(editedRow, columns[COL_EDIT_URL]).getValue();
+  var startTime = new Date(sheet.getRange(editedRow, columns[COL_START_TIME]).getValue());
+  var endTime = new Date(sheet.getRange(editedRow, columns[COL_END_TIME]).getValue());
 
   var message = "";
   message += "【イベント主催者】\n" + "　" + eOrganizer;
@@ -243,10 +270,11 @@ function createOrUpdateCalendarEvent(e) {
       var event = calendar.getEventById(eventId);
       if (event) {
         event.deleteEvent();
-        sheet.getRange(editedRow, columns["イベントID"]).clearContent();
+        sheet.getRange(editedRow, columns[COL_EVENT_ID]).clearContent();
       }
     }
-    sheet.getRange(editedRow, columns["変更フラグ"]).setValue(true);
+    sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
+    sheet.getRange(editedRow, columns[SENT_FLAG_COLUMN_NAME]).clearContent();
     return;
   }
 
@@ -260,10 +288,11 @@ function createOrUpdateCalendarEvent(e) {
       var event = calendar.getEventById(eventId);
       if (event) {
         event.deleteEvent();
-        sheet.getRange(editedRow, columns["イベントID"]).clearContent();
+        sheet.getRange(editedRow, columns[COL_EVENT_ID]).clearContent();
       }
     }
-    sheet.getRange(editedRow, columns["変更フラグ"]).setValue(true);
+    sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
+    sheet.getRange(editedRow, columns[SENT_FLAG_COLUMN_NAME]).clearContent();
     return;
   }
 
@@ -274,10 +303,11 @@ function createOrUpdateCalendarEvent(e) {
       var event = calendar.getEventById(eventId);
       if (event) {
         event.deleteEvent();
-        sheet.getRange(editedRow, columns["イベントID"]).clearContent();
+        sheet.getRange(editedRow, columns[COL_EVENT_ID]).clearContent();
       }
     }
-    sheet.getRange(editedRow, columns["変更フラグ"]).setValue(true);
+    sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
+    sheet.getRange(editedRow, columns[SENT_FLAG_COLUMN_NAME]).clearContent();
     return;
   }
 
@@ -298,17 +328,30 @@ function createOrUpdateCalendarEvent(e) {
   } else {
     if (endTime > startTime) {
       var newEvent = calendar.createEvent(VRCTitle, startTime, endTime, { description: message }).setGuestsCanSeeGuests(false);
-      sheet.getRange(editedRow, columns["イベントID"]).setValue(newEvent.getId());
+      sheet.getRange(editedRow, columns[COL_EVENT_ID]).setValue(newEvent.getId());
     }
   }
-  sheet.getRange(editedRow, columns["変更フラグ"]).setValue(true);
+  sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
+  sheet.getRange(editedRow, columns[SENT_FLAG_COLUMN_NAME]).clearContent();
 }
 
 /**=============================================
  * 登録結果をメールアドレスごとに集約して送信する関数
  */
 function sendAggregatedEmails() {
-  var CALENDAR_URL = "https://vrceve.com/";
+
+// クォータ数チェック
+  var emailQuotaRemaining = MailApp.getRemainingDailyQuota();
+  Logger.log("GASクォータ残数: " + emailQuotaRemaining);
+  // 最大送信数とクォータ残数比較して小さい方を採用
+  var effectiveMaxEmails = Math.min(MAX_EMAILS_PER_RUN, emailQuotaRemaining);
+  Logger.log("今回の実行で処理するメールの最大数: " + effectiveMaxEmails);
+  if (effectiveMaxEmails <= 0) {
+    Logger.log("制限により実行をスキップ");
+    return;
+  }
+
+  var CALENDAR_URL = NOTIFICATION_CALENDAR_URL;
 
   // メール本文に使用するヘッダーとフッター
   var header = "いつもご利用ありがとうございます。\n\n"
@@ -323,61 +366,70 @@ function sendAggregatedEmails() {
   // -------------------------------------------------------------
 
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  if (sheet.getName() !== MAIN_EVENT_SHEET_NAME) { return; }
+  
   var lastRow = sheet.getLastRow();
-  if (lastRow < 2) {
-    return; // データなし
-  }
+  var lastColumn = sheet.getLastColumn();
+  if (lastRow < 2) { return; }// データ行がない場合は終了
 
-  var data = sheet.getDataRange().getValues();
+  var dataRange = sheet.getRange(1, 1, lastRow, lastColumn);
+  var data = dataRange.getValues();
   var columns = getColumnMapping(sheet);
-  var changeFlagRange = sheet.getRange(2, columns["変更フラグ"], lastRow - 1, 1);
-  var changeFlagValues = changeFlagRange.getValues();
-  var sentRows = PropertiesService.getScriptProperties().getProperty("sentRows") || "[]";
-  sentRows = JSON.parse(sentRows);
+  
   var aggregatedEmails = {};
-  var now = new Date();
+  var successfulSendTargets = [];
+
+  const EMAIL_INDEX = columns[COL_EMAIL] - 1;
+  const CHANGE_FLAG_INDEX = columns[CHANGE_FLAG_COLUMN_NAME] - 1; 
+  const SENT_FLAG_INDEX = columns[SENT_FLAG_COLUMN_NAME] - 1;     
+  const EVENT_NAME_INDEX = columns[COL_EVENT_NAME] - 1;
+  const EDIT_URL_INDEX = columns[COL_EDIT_URL] - 1;
+  const DELETE_CHECKBOX_INDEX = columns[COL_DELETE_CHECKBOX] - 1;
+  const EVENT_ID_INDEX = columns[COL_EVENT_ID] - 1;
+  const START_TIME_INDEX = columns[COL_START_TIME] - 1;
+  const END_TIME_INDEX = columns[COL_END_TIME] - 1;
 
   for (var i = 1; i < data.length; i++) {
     var rowData = data[i];
-    var changeFlag = changeFlagValues[i - 1][0];
+    var ssRowIndex = i + 1;
 
-    // 未送信または変更フラグが立っている行を処理
-    if (sentRows.indexOf(i) === -1 || changeFlag === true) {
-      var email = rowData[columns["メールアドレス"] - 1];
+    var isChanged = rowData[CHANGE_FLAG_INDEX] === true;
+    var isSent = rowData[SENT_FLAG_INDEX] === true;
+
+    // 「変更フラグが立っている」かつ「送信済みフラグが立っていない」行を処理
+    if (isChanged && !isSent) { 
+      var email = rowData[EMAIL_INDEX];
       var subject = "";
       var body = "";
-      var eventName = rowData[columns["イベント名"] - 1];
-      var editResponseUrl = rowData[columns["修正URL"] - 1]; 
-      var deleteCheckbox = rowData[columns["イベントを登録しますか"] - 1];
-      var eventId = rowData[columns["イベントID"] - 1];
+      var eventName = rowData[EVENT_NAME_INDEX];
+      var editResponseUrl = rowData[EDIT_URL_INDEX]; 
+      var deleteCheckbox = rowData[DELETE_CHECKBOX_INDEX];
+      var eventId = rowData[EVENT_ID_INDEX];
       // Dateオブジェクトに変換
-      var startTime = new Date(rowData[columns["開始日時"] - 1]);
-      var endTime = new Date(rowData[columns["終了日時"] - 1]);
+      var startTime = new Date(rowData[START_TIME_INDEX]);
+      var endTime = new Date(rowData[END_TIME_INDEX]);
       // イベントタイムを整形
       var formattedTime = Utilities.formatDate(startTime, Session.getScriptTimeZone(), "yyyy/MM/dd HH:mm");
       var formattedEndTime = Utilities.formatDate(endTime, Session.getScriptTimeZone(), "yyyy/MM/dd HH:mm");
       // イベントタイトル作成
-      var formattedEventName = "【" + eventName + " (" + formattedTime + "～" + ")】";
+        var formattedEventName = "【" + eventName + " (" + formattedTime + "～" + ")】";
+
+        var isPassed = true; // メール送信に進むかどうかの判定フラグ
 
       // 処理結果に応じた件名と本文の生成
       // 迷惑登録判定 (イベントIDが空欄 && 変更フラグがON && 削除チェックではない)
-      if (changeFlag === true && !eventId && deleteCheckbox !== "イベントを削除する") {
-          // 処理スキップ: 迷惑登録によりカレンダー登録が拒否された行
-          // 処理済みとして記録し、変更フラグをクリア
-          if (sentRows.indexOf(i) === -1) {
-            sentRows.push(i);
-          }
-          changeFlagValues[i - 1][0] = "";
+      if (isChanged && !eventId && deleteCheckbox !== "イベントを削除する") {
+          isPassed = false;
           continue;
       } else if (deleteCheckbox === "イベントを削除する") {
         subject = "【VRChatイベントカレンダー】イベント削除申請受付";
         body = formattedEventName + "\n"
               + "イベント削除申請を受け付けました。再度、登録する場合は下記のURLから登録できます。\n" 
               + editResponseUrl;
-      } else if (now > startTime) {
+      } else if (new Date() > startTime) {
         subject = "【VRChatイベントカレンダー】登録失敗通知";
         body = formattedEventName + "\n"
-              + "イベントの開始日時が過去のため、登録できませんでした。下記のURLから内容を変更して再登録申請してください。\n"
+              + "イベントの開始日時が過去のため、登録できませんでした。下記のURLから内容を変更して再登録申請してください。\n" 
               + editResponseUrl;
       } else if (endTime < startTime) {
         subject = "【VRChatイベントカレンダー】登録失敗通知";
@@ -391,26 +443,59 @@ function sendAggregatedEmails() {
               + editResponseUrl;
       }
       // メールアドレスごとに本文を集約
-      if (!aggregatedEmails[email]) {
-        aggregatedEmails[email] = { subject: subject, body: header + body };
-      } else {
-        aggregatedEmails[email].body += "\n\n----------------------------------------\n\n" + body;
+      if (isPassed) {
+        if (!aggregatedEmails[email]) {
+            aggregatedEmails[email] = { subject: subject, body: header + body };
+        } else {
+            aggregatedEmails[email].body += "\n\n----------------------------------------\n\n" + body;
+        }
+        // 送信後のフラグ処理の準備（列番号は1から始まるため +1）
+        successfulSendTargets.push({
+            email: email, 
+            changeFlagRange: sheet.getRange(ssRowIndex, CHANGE_FLAG_INDEX + 1).getA1Notation(), 
+            sentFlagRange: sheet.getRange(ssRowIndex, SENT_FLAG_INDEX + 1).getA1Notation()
+        });
       }
-      // 処理済みとして記録
-      if (sentRows.indexOf(i) === -1) {
-        sentRows.push(i);
-      }
-      changeFlagValues[i - 1][0] = "";
     }
   }
+  var emailCount = 0;
+  var sentEmailAddresses = []; // メールを送信したアドレスを記録
 
-  // ループ終了後フッターを追記してメール送信
   for (var email in aggregatedEmails) {
-    aggregatedEmails[email].body += footer;
-    MailApp.sendEmail(email, aggregatedEmails[email].subject, aggregatedEmails[email].body);
-  }
+      if (emailCount >= effectiveMaxEmails) {
+        Logger.log("設定された上限 (" + effectiveMaxEmails + ") に達したため、メール送信を中断しました。");
+        break; 
+      }
+      aggregatedEmails[email].body += footer;
+      try {
+        MailApp.sendEmail(email, aggregatedEmails[email].subject, aggregatedEmails[email].body);
+        sentEmailAddresses.push(email); // 送信が成功したメールアドレスを記録
+        emailCount++;
+      } catch (e) {
+         Logger.log("メール送信エラー (" + email + "): " + e.toString());
+        }
+    }
+    // -----------------------------------------------------------
+    // 一括フラグ更新（実際に送信されたメールのみ対象）
+    // -----------------------------------------------------------
+    var rangesToClear = [];
+    var rangesToSetSent = [];
 
-  // 処理済みの行インデックスを保存
-  changeFlagRange.setValues(changeFlagValues);
-  PropertiesService.getScriptProperties().setProperty("sentRows", JSON.stringify(sentRows));
+    // 送信済みのリストに含まれているアドレスの行のみ、フラグ更新リストに追加
+    successfulSendTargets.forEach(target => {
+        if (sentEmailAddresses.includes(target.email)) {
+            rangesToClear.push(target.changeFlagRange);
+            rangesToSetSent.push(target.sentFlagRange);
+        }
+    });
+
+    if (rangesToClear.length > 0) {
+        sheet.getRangeList(rangesToClear).setValue('');
+        Logger.log('変更フラグをクリアしました: ' + rangesToClear.length + '件');
+    }
+
+    if (rangesToSetSent.length > 0) {
+        sheet.getRangeList(rangesToSetSent).setValue(true);
+        Logger.log('送信済みフラグを設定しました: ' + rangesToSetSent.length + '件');
+    }
 }
