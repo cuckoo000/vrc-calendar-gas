@@ -234,7 +234,6 @@ clasp pull
 |------|------|------------|
 | prod | 本番環境 | `prod/` |
 | dev | 開発・テスト | `dev/` |
-| dev_multi | 複数登録実験 | `dev_multi-event-registration/` |
 
 ### 4.2 環境切替時の手順
 
@@ -301,4 +300,3 @@ Logger.log("GASクォータ残数: " + emailQuotaRemaining);
 ### 6.3 デバッグ時の注意
 
 - 本番環境で `Logger.log()` に個人情報（メールアドレス等）を出力しすぎないよう注意
-- dev_multi 環境にはデバッグ用の詳細ログが多数残っている（本番移行時に削減すること）
