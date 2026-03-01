@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-タスク管理アプリケーション「積み上げ（tsumi-age）」のリポジトリ。
+VRChatイベントカレンダーの自動化システム（Google Apps Script）。Google Forms で受け付けたイベント情報を GAS で処理し、Google Calendar への登録・更新・削除、および登録者へのメール通知を自動で行う。
 
 ## ドキュメント構造
 
@@ -17,11 +17,9 @@
 
 ## ツール・技術スタック
 
-- **パッケージマネージャ**: pnpm
-- **フレームワーク**: Next.js (App Router)
-- **スタイリング**: Tailwind CSS
-- **バックエンド**: Supabase
-- **言語**: TypeScript（strict mode）
+- **言語**: JavaScript（Google Apps Script）
+- **デプロイ**: clasp（GAS CLI）
+- **外部サービス**: Google Forms / Google Sheets / Google Calendar / MailApp
 
 ## 図表・ダイアグラムの記載ルール
 
