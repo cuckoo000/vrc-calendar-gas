@@ -39,7 +39,9 @@ clasp を使って Google Apps Script プロジェクトとローカルリポジ
 | Form | `prod/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
 | Spreadsheet | `prod/spreadsheet/vrchat-event-calendar-2024-responses/` | `createOrUpdateCalendarEventC.js`, `mail.js`, `syudo_mailControl.js` |
 
-### dev（開発環境）
+### dev（開発環境）— リソース情報
+
+> **現在の状態**: dev/ ディレクトリはローカルリポジトリから削除済み。以下の Google リソースはリモートに存在し、再構築時に使用する。再構築時は prod のコードをコピーし、下記のIDに差し替えて `clasp push` すること。
 
 | リソース | 名称 | ID |
 |---------|------|-----|
@@ -51,8 +53,8 @@ clasp を使って Google Apps Script プロジェクトとローカルリポジ
 
 | サービス | ディレクトリ | 主要ファイル |
 |---------|------------|------------|
-| Form | `dev/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
-| Spreadsheet | `dev/spreadsheet/vrchat-event-calendar-2024-responses/` | `コード.js` |
+| Form | `dev/form/vrchat-event-calendar-2024/`（未配置） | — |
+| Spreadsheet | `dev/spreadsheet/vrchat-event-calendar-2024-responses/`（未配置） | — |
 
 ---
 
@@ -109,6 +111,9 @@ clasp pull
 ```
 
 **dev 環境**:
+
+> **注意**: dev/ は現在未配置。再構築後に以下のコマンドが使用可能になる。
+
 ```powershell
 # dev Form
 cd dev/form/vrchat-event-calendar-2024/

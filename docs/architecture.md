@@ -34,10 +34,12 @@
 ```
 vrc-calendar-gas/
 ├── prod/          ← 本番環境（vrceve.com で公開中のカレンダー）
-└── dev/           ← 開発環境（prod と同一構成のテスト用）
+└── dev/           ← 開発環境（※現在未配置。再構築時に prod からコピーして作成する）
 ```
 
 各環境は独立した GAS プロジェクト（scriptId）を持ち、それぞれ異なる Google Calendar・Spreadsheet に接続する。
+
+> **注意**: dev 環境は過去に prod と大幅に乖離したため削除済み。次回の開発作業時に、prod のコードをベースに再構築する。Google 上の dev 用 GAS プロジェクト・リソース自体は存在する。
 
 ### 環境ごとの Google リソース対応表
 
@@ -51,7 +53,9 @@ vrc-calendar-gas/
 | Spreadsheet GAS プロジェクト | — | scriptId: `1o4UZLVDBJvKQlQSJtugy0uBPW9GOVhZhZJxgbeMZ-XHcxc5A2LLmEO-W` |
 | Google Calendar | — | `0058cd78d2936be61ca77f27b894c73bfae9f1f2aa778a762f0c872e834ee621@group.calendar.google.com` |
 
-#### dev（開発環境）
+#### dev（開発環境）— リソース情報
+
+> **現在の状態**: dev/ ディレクトリはローカルリポジトリから削除済み。以下の Google リソースはリモートに存在し、再構築時に使用する。
 
 | リソース種別 | 名称 | ID |
 |------------|------|----|
@@ -277,5 +281,4 @@ sequenceDiagram
 
 | 課題 | 影響 | 対応状況 |
 |------|------|---------|
-| ファイル名の不統一（`createOrUpdateCalendarEventC.js` vs `コード.js`） | 保守性の低下 | 未対応 |
-| prod と dev でコードの構造が乖離 | dev での検証結果が prod に適用できない | 未対応（将来的にソースの一元化を検討） |
+| dev/ が未配置 | ローカルでの開発・テストが行えない | 次回開発作業時に prod からコピーして再構築予定 |

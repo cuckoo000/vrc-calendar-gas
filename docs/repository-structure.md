@@ -27,18 +27,10 @@ vrc-calendar-gas/
 │       └── vrchat-event-calendar-2024-responses/
 │           ├── .clasp.json            # clasp 設定（本番 Spreadsheet の scriptId）
 │           ├── appsscript.json        # GAS マニフェスト
-│           └── createOrUpdateCalendarEventC.js  # カレンダー処理・メール通知
-├── dev/                               # 開発環境
-│   ├── form/
-│   │   └── vrchat-event-calendar-2024/
-│   │       ├── .clasp.json
-│   │       ├── appsscript.json
-│   │       └── onFormSubmitC.js
-│   └── spreadsheet/
-│       └── vrchat-event-calendar-2024-responses/
-│           ├── .clasp.json
-│           ├── appsscript.json
-│           └── コード.js               # prod の createOrUpdateCalendarEventC.js と同等
+│           ├── createOrUpdateCalendarEventC.js  # カレンダー処理・メール通知
+│           ├── mail.js                # メールクォータ確認ユーティリティ
+│           └── syudo_mailControl.js    # 過去イベントのフラグバッチ処理
+├── dev/                               # 開発環境（※現在未配置。再構築時に prod からコピーして作成する）
 ```
 
 ---
@@ -93,12 +85,15 @@ vrc-calendar-gas/
 
 ### dev/ （開発環境）
 
-**役割**: 開発・テスト用の環境。prod とほぼ同一のコード構成を持つ。
+**役割**: 開発・テスト用の環境。prod と同一のコード構成を持つべきだが、**現在ローカルリポジトリには未配置**。
 
-**prod との差異**:
-- `.clasp.json` の `scriptId` が dev 用の GAS プロジェクトを指す（Spreadsheet は別、Form は既知の問題あり）
-- コード内の `CALENDAR_ID`、スプレッドシートID が dev 環境のものを指す
-- ファイル名が `コード.js`（prod は `createOrUpdateCalendarEventC.js`）
+**現在の状態**: prod との大幅な乖離が生じたため、旧 dev/ を削除済み（Git 履歴には残存）。再構築時は prod のコードをコピーし、環境依存値を dev 用に差し替えて作成する。
+
+**再構築時の手順**:
+1. `dev/` ディレクトリを prod と同一構造で作成
+2. `.clasp.json` の `scriptId` を dev 用 GAS プロジェクトに差し替え
+3. コード内の `CALENDAR_ID`、スプレッドシートIDを dev 環境のものに差し替え
+4. `clasp push` で dev 用 GAS プロジェクトに反映
 
 ---
 
@@ -135,9 +130,9 @@ vrc-calendar-gas/
 | 環境 | サービス | Google リソース名 | scriptId | ディレクトリ | 主要ファイル |
 |------|---------|-----------------|----------|------------|------------|
 | prod | Form | VRChatイベントカレンダー2024 | `1ZxJXzM...81aXz` | `prod/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
-| prod | Spreadsheet | VRChatイベントカレンダー | `1o4UZLV...mEO-W` | `prod/spreadsheet/vrchat-event-calendar-2024-responses/` | `createOrUpdateCalendarEventC.js` |
-| dev | Form | 【検証用】VRChatイベントカレンダー2024 | `12mqT0C...N3Fat` | `dev/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
-| dev | Spreadsheet | 【検証用】VRChatイベントカレンダー2024（回答） | `1ZOOWCM...5U45H` | `dev/spreadsheet/vrchat-event-calendar-2024-responses/` | `コード.js` |
+| prod | Spreadsheet | VRChatイベントカレンダー | `1o4UZLV...mEO-W` | `prod/spreadsheet/vrchat-event-calendar-2024-responses/` | `createOrUpdateCalendarEventC.js`, `mail.js`, `syudo_mailControl.js` |
+| dev | Form | 【検証用】VRChatイベントカレンダー2024 | `12mqT0C...N3Fat` | `dev/form/vrchat-event-calendar-2024/`（未配置） | — |
+| dev | Spreadsheet | 【検証用】VRChatイベントカレンダー2024（回答） | `1ZOOWCM...5U45H` | `dev/spreadsheet/vrchat-event-calendar-2024-responses/`（未配置） | — |
 
 ---
 
@@ -145,5 +140,5 @@ vrc-calendar-gas/
 
 | 課題 | 影響 | 対応方針 |
 |------|------|---------|
-| ファイル名の不統一（`createOrUpdateCalendarEventC.js` vs `コード.js`） | 保守性低下、どのファイルが何か分かりにくい | 全環境でファイル名を統一 |
-| prod と dev でコードの構造が乖離 | dev での検証結果が prod に適用できない | 将来的にソースの一元化（`src/` + デプロイスクリプト）を検討 |
+| dev/ が未配置 | 開発・テストがローカルで行えない | 次回開発作業時に prod からコピーして再構築する |
+| 将来的なソース一元化 | 環境ごとのコード重複 | `src/` + デプロイスクリプトによる一元管理を検討 |
