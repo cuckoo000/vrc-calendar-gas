@@ -1,0 +1,22 @@
+# ── OS 生成ファイル ──
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ── エディタ / IDE ──
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Node.js ──
+node_modules/
+
+# ── clasp 認証情報（ホームディレクトリにあるが念のため）──
+.clasprc.json
+
+# ── ログ / 一時ファイル ──
+*.log
+*.tmp
