@@ -132,12 +132,12 @@ vrc-calendar-gas/
 
 ## 環境ごとの GAS プロジェクト対応表
 
-| 環境 | サービス | ディレクトリ | 主要ファイル |
-|------|---------|------------|------------|
-| prod | Form | `prod/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
-| prod | Spreadsheet | `prod/spreadsheet/vrchat-event-calendar-2024-responses/` | `createOrUpdateCalendarEventC.js` |
-| dev | Form | `dev/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
-| dev | Spreadsheet | `dev/spreadsheet/vrchat-event-calendar-2024-responses/` | `コード.js` |
+| 環境 | サービス | Google リソース名 | scriptId | ディレクトリ | 主要ファイル |
+|------|---------|-----------------|----------|------------|------------|
+| prod | Form | VRChatイベントカレンダー2024 | `1ZxJXzM...81aXz` | `prod/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
+| prod | Spreadsheet | VRChatイベントカレンダー | `1o4UZLV...mEO-W` | `prod/spreadsheet/vrchat-event-calendar-2024-responses/` | `createOrUpdateCalendarEventC.js` |
+| dev | Form | 【検証用】VRChatイベントカレンダー2024 | `12mqT0C...N3Fat` | `dev/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
+| dev | Spreadsheet | 【検証用】VRChatイベントカレンダー2024（回答） | `1ZOOWCM...5U45H` | `dev/spreadsheet/vrchat-event-calendar-2024-responses/` | `コード.js` |
 
 ---
 
@@ -145,6 +145,5 @@ vrc-calendar-gas/
 
 | 課題 | 影響 | 対応方針 |
 |------|------|---------|
-| dev と prod の Form が同じ scriptId | clasp push で相互に上書きするリスク | dev 用 Form GAS プロジェクトを別途作成 |
 | ファイル名の不統一（`createOrUpdateCalendarEventC.js` vs `コード.js`） | 保守性低下、どのファイルが何か分かりにくい | 全環境でファイル名を統一 |
-| 環境間でコードがほぼ重複 | 片方だけ修正して差分が発生するリスク | 将来的にソースの一元化（`src/` + デプロイスクリプト）を検討 |
+| prod と dev でコードの構造が乖離 | dev での検証結果が prod に適用できない | 将来的にソースの一元化（`src/` + デプロイスクリプト）を検討 |

@@ -39,6 +39,28 @@ vrc-calendar-gas/
 
 各環境は独立した GAS プロジェクト（scriptId）を持ち、それぞれ異なる Google Calendar・Spreadsheet に接続する。
 
+### 環境ごとの Google リソース対応表
+
+#### prod（本番環境）
+
+| リソース種別 | 名称 | ID |
+|------------|------|----|
+| Google Form | VRChatイベントカレンダー2024 | — |
+| Form GAS プロジェクト | — | scriptId: `1ZxJXzMuSCFfPLzmbhXaThAUl8gxcy3BMG22x4VUhPvVdkzmBJMu81aXz` |
+| Google Spreadsheet | VRChatイベントカレンダー | ID: `1khYEj0t3eI2LnYxgnN3uJUKHHQg8CJTk3JD3vITQlQc` |
+| Spreadsheet GAS プロジェクト | — | scriptId: `1o4UZLVDBJvKQlQSJtugy0uBPW9GOVhZhZJxgbeMZ-XHcxc5A2LLmEO-W` |
+| Google Calendar | — | `0058cd78d2936be61ca77f27b894c73bfae9f1f2aa778a762f0c872e834ee621@group.calendar.google.com` |
+
+#### dev（開発環境）
+
+| リソース種別 | 名称 | ID |
+|------------|------|----|
+| Google Form | 【検証用】VRChatイベントカレンダー2024 | — |
+| Form GAS プロジェクト | createCalendarEvent_form_test | scriptId: `12mqT0Ciyy-qSg_9_55lUnpP_A-MzVPFcvhAHkAAL0vWHrBrfYcDN3Fat` |
+| Google Spreadsheet | 【検証用】VRChatイベントカレンダー2024（回答） | ID: `1rHTVTMSDbWq9XDY1dkAY7Sr99TNvlz35DuupZsgaRoE` |
+| Spreadsheet GAS プロジェクト | — | scriptId: `1ZOOWCMWJn1RjMuIMfryNR3KoDXBEmJ04Kgn4CAizf2YBrAox9Gn5U45H` |
+| Google Calendar | — | `6837aa0e09b99b8e9443aa0c4132920f0827d5aeb85b2a1c0768283ee04b8ab5@group.calendar.google.com` |
+
 ### GAS プロジェクト構成（環境あたり）
 
 ```
@@ -239,7 +261,6 @@ sequenceDiagram
 
 - `.clasp.json` の `scriptId` が環境ごとに異なることを確認
 - コード内の `CALENDAR_ID` とスプレッドシートIDが対象環境のものであることを確認
-- **既知の問題**: dev の Form scriptId が prod と同一になっている（要修正）
 
 ---
 
@@ -256,6 +277,5 @@ sequenceDiagram
 
 | 課題 | 影響 | 対応状況 |
 |------|------|---------|
-| dev と prod の Form scriptId が同一 | clasp push で意図しない環境を上書きするリスク | 未対応（dev 用の Form GAS プロジェクトを別途作成する必要あり） |
 | ファイル名の不統一（`createOrUpdateCalendarEventC.js` vs `コード.js`） | 保守性の低下 | 未対応 |
-| コードの重複（prod と dev でほぼ同一のコード） | 修正漏れのリスク | 未対応（将来的にソースの一元化を検討） |
+| prod と dev でコードの構造が乖離 | dev での検証結果が prod に適用できない | 未対応（将来的にソースの一元化を検討） |

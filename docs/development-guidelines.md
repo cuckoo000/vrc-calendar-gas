@@ -235,7 +235,29 @@ clasp pull
 | prod | 本番環境 | `prod/` |
 | dev | 開発・テスト | `dev/` |
 
-### 4.2 環境切替時の手順
+### 4.2 環境ごとの Google リソース
+
+**prod（本番環境）**
+
+| リソース | 名称 | ID |
+|---------|------|----|
+| Google Form | VRChatイベントカレンダー2024 | — |
+| Form GAS | — | scriptId: `1ZxJXzMuSCFfPLzmbhXaThAUl8gxcy3BMG22x4VUhPvVdkzmBJMu81aXz` |
+| Google Spreadsheet | VRChatイベントカレンダー | `1khYEj0t3eI2LnYxgnN3uJUKHHQg8CJTk3JD3vITQlQc` |
+| Spreadsheet GAS | — | scriptId: `1o4UZLVDBJvKQlQSJtugy0uBPW9GOVhZhZJxgbeMZ-XHcxc5A2LLmEO-W` |
+| Google Calendar | — | `0058cd78d2936be61ca77f27b894c73bfae9f1f2aa778a762f0c872e834ee621@group.calendar.google.com` |
+
+**dev（開発環境）**
+
+| リソース | 名称 | ID |
+|---------|------|----|
+| Google Form | 【検証用】VRChatイベントカレンダー2024 | — |
+| Form GAS | createCalendarEvent_form_test | scriptId: `12mqT0Ciyy-qSg_9_55lUnpP_A-MzVPFcvhAHkAAL0vWHrBrfYcDN3Fat` |
+| Google Spreadsheet | 【検証用】VRChatイベントカレンダー2024（回答） | `1rHTVTMSDbWq9XDY1dkAY7Sr99TNvlz35DuupZsgaRoE` |
+| Spreadsheet GAS | — | scriptId: `1ZOOWCMWJn1RjMuIMfryNR3KoDXBEmJ04Kgn4CAizf2YBrAox9Gn5U45H` |
+| Google Calendar | — | `6837aa0e09b99b8e9443aa0c4132920f0827d5aeb85b2a1c0768283ee04b8ab5@group.calendar.google.com` |
+
+### 4.3 環境切替時の手順
 
 1. 対象環境のディレクトリに `cd` する
 2. `.clasp.json` の `scriptId` を確認（誤った環境に push しないため）
@@ -244,13 +266,12 @@ clasp pull
    - `onFormSubmit()` 内のスプレッドシートID
    - `onFormSubmit()` 内の列番号
 
-### 4.3 既知の問題
+### 4.4 既知の問題
 
 | 問題 | 影響 | 対応方針 |
-|------|------|---------|
-| dev と prod の Form scriptId が同一 | 一方の clasp push で他方を上書きするリスク | dev 用の Form GAS プロジェクトを別途作成する |
+|------|------|--------|
 | ファイル名の不統一（`createOrUpdateCalendarEventC.js` vs `コード.js`） | 保守性の低下 | 全環境でファイル名を統一する |
-| env 間でコードがほぼ重複 | 片方だけ修正して差分が発生するリスク | 将来的にソースの一元化を検討 |
+| prod と dev でコードの構造が乖離 | dev での検証結果が prod に適用できない | 将来的にソースの一元化を検討 |
 
 ---
 
