@@ -177,9 +177,8 @@ flowchart TD
 |------|------------|-----------------|
 | dev | 2列目 | `1rHTVTMSDbWq9XDY1dkAY7Sr99TNvlz35DuupZsgaRoE` |
 | prod | 16列目 | `1khYEj0t3eI2LnYxgnN3uJUKHHQg8CJTk3JD3vITQlQc` |
-| dev_multi | 22列目 | `1rPnRV15D_m69ai8bHZOVAFIu8W0kuSwoE-1saJEIfgM` |
 
-> **注意**: prod と dev_multi はハードコードされた列番号を使用。dev は修正URL列が空かどうかを制御に使用。
+> **注意**: prod はハードコードされた列番号を使用。dev は修正URL列が空かどうかを制御に使用。
 
 ---
 

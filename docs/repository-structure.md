@@ -39,15 +39,6 @@ vrc-calendar-gas/
 │           ├── .clasp.json
 │           ├── appsscript.json
 │           └── コード.js               # prod の createOrUpdateCalendarEventC.js と同等
-└── dev_multi-event-registration/      # 複数イベント登録の実験環境
-    ├── form/
-    │   ├── .clasp.json
-    │   ├── appsscript.json
-    │   └── onFormSubmitC.js
-    └── spreadsheet/
-        ├── .clasp.json
-        ├── appsscript.json
-        └── コード.js                   # 複数登録機能追加版
 ```
 
 ---
@@ -109,17 +100,6 @@ vrc-calendar-gas/
 - コード内の `CALENDAR_ID`、スプレッドシートID が dev 環境のものを指す
 - ファイル名が `コード.js`（prod は `createOrUpdateCalendarEventC.js`）
 
-### dev_multi-event-registration/ （複数イベント登録実験環境）
-
-**役割**: 複数イベント登録機能の実験・開発用環境。
-
-**prod/dev との差異**:
-- `copyRowToLog()` 関数（複数登録シートへの行コピー）が追加されている
-- ブラックリスト機能、集約メール送信、修正URL請求が未実装
-- メール送信がコメントアウトされている
-- 変更フラグ管理なし
-- サブフォルダ名が省略されている（`form/` 直下にファイルを配置）
-
 ---
 
 ## ファイル配置規則
@@ -158,8 +138,6 @@ vrc-calendar-gas/
 | prod | Spreadsheet | `prod/spreadsheet/vrchat-event-calendar-2024-responses/` | `createOrUpdateCalendarEventC.js` |
 | dev | Form | `dev/form/vrchat-event-calendar-2024/` | `onFormSubmitC.js` |
 | dev | Spreadsheet | `dev/spreadsheet/vrchat-event-calendar-2024-responses/` | `コード.js` |
-| dev_multi | Form | `dev_multi-event-registration/form/` | `onFormSubmitC.js` |
-| dev_multi | Spreadsheet | `dev_multi-event-registration/spreadsheet/` | `コード.js` |
 
 ---
 
@@ -169,5 +147,4 @@ vrc-calendar-gas/
 |------|------|---------|
 | dev と prod の Form が同じ scriptId | clasp push で相互に上書きするリスク | dev 用 Form GAS プロジェクトを別途作成 |
 | ファイル名の不統一（`createOrUpdateCalendarEventC.js` vs `コード.js`） | 保守性低下、どのファイルが何か分かりにくい | 全環境でファイル名を統一 |
-| dev_multi のサブフォルダ構成が他環境と異なる | 構成の一貫性が欠ける | サブフォルダ名を統一するか、意図的な省略としてドキュメント化 |
 | 環境間でコードがほぼ重複 | 片方だけ修正して差分が発生するリスク | 将来的にソースの一元化（`src/` + デプロイスクリプト）を検討 |

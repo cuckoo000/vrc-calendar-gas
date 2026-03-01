@@ -185,7 +185,7 @@
 
 **定義**: GAS プロジェクトを一意に識別するID。`.clasp.json` に記録される。
 
-**本プロジェクトでの注意**: 各環境の Form 用・Spreadsheet 用で計6つの scriptId が存在する（既知の問題: dev と prod の Form が同一 scriptId）
+**本プロジェクトでの注意**: 各環境の Form 用・Spreadsheet 用で計4つの scriptId が存在する（既知の問題: dev と prod の Form が同一 scriptId）
 
 ---
 
@@ -238,7 +238,6 @@
 | `sendEventEditUrls(e)` | Spreadsheet GAS | 修正URL請求への応答メール送信 |
 | `getColumnMapping(sheet)` | Spreadsheet GAS | ヘッダー行から列名→列番号マッピングを取得 |
 | `getBlacklists()` | Spreadsheet GAS | 語録リストからブラックリスト情報を取得 |
-| `copyRowToLog()` | Spreadsheet GAS (dev_multi) | 複数登録シートへの行コピー（実験機能） |
 
 ---
 
@@ -283,4 +282,3 @@
 |--------|------------|------|
 | prod | `prod/` | 本番環境。vrceve.com で公開中のカレンダーに反映 |
 | dev | `dev/` | 開発・テスト環境。prod と同等の構成 |
-| dev_multi | `dev_multi-event-registration/` | 複数イベント登録の実験環境 |

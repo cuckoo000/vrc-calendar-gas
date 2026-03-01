@@ -34,8 +34,7 @@
 ```
 vrc-calendar-gas/
 ├── prod/          ← 本番環境（vrceve.com で公開中のカレンダー）
-├── dev/           ← 開発環境（prod と同一構成のテスト用）
-└── dev_multi-event-registration/  ← 複数イベント登録の実験環境
+└── dev/           ← 開発環境（prod と同一構成のテスト用）
 ```
 
 各環境は独立した GAS プロジェクト（scriptId）を持ち、それぞれ異なる Google Calendar・Spreadsheet に接続する。
@@ -66,16 +65,6 @@ vrc-calendar-gas/
 └──────────────────────────────────────────────────┘
 ```
 
-### 環境間の差異
-
-| 項目 | prod / dev | dev_multi |
-|------|-----------|-----------|
-| ブラックリスト機能 | あり | なし |
-| 集約メール送信（`sendAggregatedEmails`） | あり | なし |
-| 修正URL請求（`sendEventEditUrls`） | あり | なし |
-| メール送信 | 有効 | コメントアウト |
-| 複数登録シートコピー（`copyRowToLog`） | なし | あり |
-| 変更フラグ管理 | あり | なし |
 
 ---
 
