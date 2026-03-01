@@ -20,6 +20,7 @@ const MAX_EMAILS_PER_RUN = 20;
 const CHANGE_FLAG_COLUMN_NAME = '変更フラグ';
 const SENT_FLAG_COLUMN_NAME = '送信済みフラグ';
 
+const COL_TIMESTAMP = 'タイムスタンプ';
 const COL_EMAIL = 'メールアドレス';
 const COL_EVENT_NAME = 'イベント名';
 const COL_EDIT_URL = '修正URL';
@@ -205,6 +206,11 @@ function createOrUpdateCalendarEvent(e) {
 
   var columns = getColumnMapping(sheet);
 
+  // タイムスタンプを取得
+  var registrationDateValue = sheet.getRange(editedRow, columns[COL_TIMESTAMP]).getValue();
+  var registrationDate = new Date(registrationDateValue);
+  if (isNaN(registrationDate.getTime())) { registrationDate = new Date(); }
+
   // --- 迷惑フィルタリングの開始（メールアドレスと主催者名チェック） ---
   var email = sheet.getRange(editedRow, columns[COL_EMAIL]).getValue();
   var eventOrganizer = sheet.getRange(editedRow, columns[COL_EVENT_ORGANIZER]).getValue(); // 主催者名を取得
@@ -316,7 +322,7 @@ function createOrUpdateCalendarEvent(e) {
     VRCTitle = '【Android オンリー】' + VRCTitle;
   }
 
-  if (eventId) {
+if (eventId) {
     var event = calendar.getEventById(eventId);
     if (event) {
       event.setTitle(VRCTitle);
@@ -324,15 +330,23 @@ function createOrUpdateCalendarEvent(e) {
       event.setDescription(message);
     } 
   } else {
-    if (endTime > startTime) {
-      var newEvent = calendar.createEvent(VRCTitle, startTime, endTime, { description: message }).setGuestsCanSeeGuests(false);
-      sheet.getRange(editedRow, columns[COL_EVENT_ID]).setValue(newEvent.getId());
-    }
+    var newEvent = calendar.createEvent(VRCTitle, startTime, endTime, { description: message }).setGuestsCanSeeGuests(false);
+    sheet.getRange(editedRow, columns[COL_EVENT_ID]).setValue(newEvent.getId());
   }
-  sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
-  sheet.getRange(editedRow, columns[SENT_FLAG_COLUMN_NAME]).clearContent();
-}
 
+  // タイムスタンプとイベント開始日の比較
+  var isSameDay = registrationDate.getFullYear() === startTime.getFullYear() &&
+                  registrationDate.getMonth() === startTime.getMonth() &&
+                  registrationDate.getDate() === startTime.getDate();
+
+  if (isSameDay) {
+    Logger.log("イベント開始日が登録日と同じため、変更フラグは立てません。");
+  } else {
+    // 異なる日の場合のみ変更フラグを立てる
+    sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
+    sheet.getRange(editedRow, columns[SENT_FLAG_COLUMN_NAME]).clearContent();
+  }
+}
 /**=============================================
  * 登録結果をメールアドレスごとに集約して送信する関数
  */
