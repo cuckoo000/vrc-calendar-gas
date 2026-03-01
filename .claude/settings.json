@@ -6,7 +6,8 @@
       "Skill(architecture-design)",
       "Skill(repository-structure)",
       "Skill(development-guidelines)",
-      "Skill(glossary-creation)"
+      "Skill(glossary-creation)",
+      "Skill(destructive-operations)"
     ],
     "deny": [],
     "ask": []
