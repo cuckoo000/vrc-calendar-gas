@@ -315,6 +315,22 @@ function createOrUpdateCalendarEvent(e) {
     return;
   }
 
+  // 6時間超過チェック
+  var timeDiff = (endTime - startTime) / (1000 * 60 * 60);
+  if (timeDiff > 6) {
+    // 処理中断: イベント時間が6時間を超過
+    if (eventId) {
+      var event = calendar.getEventById(eventId);
+      if (event) {
+        event.deleteEvent();
+        sheet.getRange(editedRow, columns[COL_EVENT_ID]).clearContent();
+      }
+    }
+    sheet.getRange(editedRow, columns[CHANGE_FLAG_COLUMN_NAME]).setValue(true);
+    sheet.getRange(editedRow, columns[SENT_FLAG_COLUMN_NAME]).clearContent();
+    return;
+  }
+
   var VRCTitle = eventName;
   if (android_pc === "PC/android") {
     VRCTitle = '【Android 対応】' + VRCTitle;
@@ -447,6 +463,11 @@ function sendAggregatedEmails() {
         subject = "【VRChatイベントカレンダー】登録失敗通知";
         body = formattedEventName + "\n"
               + "イベントの終了日時（" + formattedEndTime + "）が開始日時より前のため、登録できませんでした。下記のURLから内容を変更して再登録申請してください。\n" 
+              + editResponseUrl;
+      } else if ((endTime - startTime) / (1000 * 60 * 60) > 6) {
+        subject = "【VRChatイベントカレンダー】登録失敗通知";
+        body = formattedEventName + "\n"
+              + "6時間を超えるイベントは登録できません。下記のURLから終了日時を変更して再登録申請してください。\n" 
               + editResponseUrl;
       } else {
         subject = "【VRChatイベントカレンダー】イベント登録・更新完了通知";
